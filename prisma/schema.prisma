@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Game {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  imageUrl    String
+  platform    String
+  keys        Json
+  orders      Order[]  // Добавлено обратное отношение
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  isAdmin  Boolean @default(false)
+  orders   Order[] // Добавлено обратное отношение
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  gameId       Int
+  key          String
+  price        Float
+  purchaseDate DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  game Game @relation(fields: [gameId], references: [id])
+}
