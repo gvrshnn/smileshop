@@ -15,7 +15,7 @@ export default function Home() {
         <>
           <p>
             Вы вошли как: {session.user?.email}{" "}
-            {(session as any).isAdmin && "(admin)"}
+            {session.isAdmin && "(admin)"}
           </p>
           <Button onClick={() => signOut()}>Выйти</Button>
         </>
