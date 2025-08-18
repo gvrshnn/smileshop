@@ -1,9 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -33,15 +33,24 @@ const handler = NextAuth({
       if (user && 'isAdmin' in user) {
         token.isAdmin = user.isAdmin;
       }
+      // Добавляем id пользователя в токен (чтобы использовать на клиенте)
+      if (user?.id) {
+        token.sub = String(user.id);
+      }
       return token;
     },
     async session({ session, token }) {
       if (token && 'isAdmin' in token) {
         session.isAdmin = token.isAdmin;
       }
+      if (session.user && token?.sub) {
+        session.user.id = token.sub;
+      }
       return session;
     },
   },
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

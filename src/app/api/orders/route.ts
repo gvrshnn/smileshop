@@ -1,8 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Неавторизован" }, { status: 401 });
+  }
+
   const { userId, gameId } = await req.json();
+  if (!userId || !gameId) {
+    return NextResponse.json({ error: "Отсутствуют userId или gameId" }, { status: 400 });
+  }
+
+  if (parseInt(session.user.id) !== userId) {
+    return NextResponse.json({ error: "Несанкционированный доступ" }, { status: 403 });
+  }
 
   // Находим игру
   const game = await prisma.game.findUnique({ where: { id: gameId } });
