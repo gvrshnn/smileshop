@@ -38,61 +38,60 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
 
   return (
     <div
-      style={{ position: "relative" }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Админские кнопки */}
-      {isAdmin && isHovered && (
-        <div
-          style={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            zIndex: 10,
-            display: "flex",
-            flexDirection: "column",
-            gap: 4,
-          }}
-        >
-          <Popconfirm
-            title="Удалить игру?"
-            description="Это действие нельзя отменить"
-            onConfirm={handleDelete}
-            okText="Да"
-            cancelText="Нет"
-          >
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              loading={deleting}
-              size="small"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.9)",
-                border: "1px solid #ff4d4f",
-              }}
-            />
-          </Popconfirm>
-          
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            size="small"
-            onClick={() => onEdit?.(game)}
-            style={{
-              backgroundColor: "rgba(255, 255, 255, 0.9)",
-              border: "1px solid #1890ff",
-            }}
-          />
-        </div>
-      )}
-
       <Card
         hoverable
-        style={{ width: 240 }}
+        style={{ width: 240, position: "relative" }}
         cover={<img alt={game.title} src={game.imageUrl} />}
       >
+        {/* Админские кнопки */}
+        {isAdmin && isHovered && (
+          <div
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              zIndex: 10,
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+            }}
+          >
+            <Popconfirm
+              title="Удалить игру?"
+              description="Это действие нельзя отменить"
+              onConfirm={handleDelete}
+              okText="Да"
+              cancelText="Нет"
+            >
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                loading={deleting}
+                size="small"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                  border: "1px solid #ff4d4f",
+                }}
+              />
+            </Popconfirm>
+            
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              size="small"
+              onClick={() => onEdit?.(game)}
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                border: "1px solid #1890ff",
+              }}
+            />
+          </div>
+        )}
+
         <Card.Meta title={game.title} description={`${game.price} ₽`} />
         <div style={{ marginTop: 12 }}>
           <Button
