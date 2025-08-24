@@ -18,7 +18,7 @@ export default function GameCardsRegistry({ games, onBuy, onGamesUpdate }: Props
   const [editingGame, setEditingGame] = useState<Game | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
 
-  const filtered = games.filter((g) => g.platform === selectedFilter);
+  const filtered = selectedFilter ? games.filter((g) => g.platform === selectedFilter) : games;
 
   const handleEdit = (game: Game) => {
     setEditingGame(game);

@@ -93,7 +93,7 @@ export default function Home() {
         )}
 
         <p style={{ marginTop: 20 }}>
-          Текущий фильтр: <b>{selectedFilter}</b>
+          Текущий фильтр: <b>{selectedFilter || "Все платформы"}</b>
         </p>
 
         <GameCardsRegistry
