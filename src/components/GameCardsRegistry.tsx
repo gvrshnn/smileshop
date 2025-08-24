@@ -1,6 +1,6 @@
 "use client";
 
-import { Row, Col, message } from "antd";
+import { Row, Col } from "antd";
 import { useFilter } from "@/context/FilterContext";
 import GameCard from "./GameCard";
 import GameEditModal from "./GameEditModal";

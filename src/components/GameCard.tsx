@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Button, Space, Popconfirm, message } from "antd";
+import { Card, Button, Popconfirm, message } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { Game } from "@prisma/client";

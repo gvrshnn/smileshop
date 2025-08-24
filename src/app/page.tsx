@@ -32,7 +32,7 @@ export default function Home() {
     fetchGames();
   }, []);
 
-  const handleBuy = (order: any) => {
+  const handleBuy = (order: { key: string }) => {
     alert(`Спасибо за покупку! Ваш ключ: ${order.key}`);
     setModalOpen(false);
   };  

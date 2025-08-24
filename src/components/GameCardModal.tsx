@@ -8,10 +8,10 @@ interface Props {
   game: Game | null;
   open: boolean;
   onClose: () => void;
-  onBuy: (order: any) => void;
+  onBuy: (order: { key: string }) => void;
 }
 
-export default function GameCardModal({ game, open, onClose, onBuy }: Props) {
+export default function GameCardModal({ game, open, onClose }: Props) {
   const { data: session } = useSession();
 
   if (!game) return null;
