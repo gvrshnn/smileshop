@@ -10,42 +10,50 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSave: (updatedGame: Partial<Game>) => Promise<void>;
+  isCreating?: boolean;
 }
 
-export default function GameEditModal({ game, open, onClose, onSave }: Props) {
+export default function GameEditModal({ game, open, onClose, onSave, isCreating = false }: Props) {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [keys, setKeys] = useState<string[]>([]);
 
   // Инициализируем форму при открытии
   useEffect(() => {
-    if (game && open) {
-      form.setFieldsValue({
-        title: game.title,
-        description: game.description,
-        price: game.price,
-        platform: game.platform,
-        imageUrl: game.imageUrl,
-      });
-      setKeys(game.keys as string[] || []);
+    if (open) {
+      if (game && !isCreating) {
+        // Режим редактирования - заполняем форму данными игры
+        form.setFieldsValue({
+          title: game.title,
+          description: game.description,
+          price: game.price,
+          platform: game.platform,
+          imageUrl: game.imageUrl,
+        });
+        setKeys(game.keys as string[] || []);
+      } else {
+        // Режим создания - очищаем форму
+        form.resetFields();
+        setKeys([]);
+      }
     }
-  }, [game, open, form]);
+  }, [game, open, form, isCreating]);
 
   const handleSave = async () => {
     try {
       setLoading(true);
       const values = await form.validateFields();
       
-      const updatedGame = {
+      const gameData = {
         ...values,
         keys: keys,
       };
 
-      await onSave(updatedGame);
-      message.success("Игра успешно обновлена");
+      await onSave(gameData);
+      message.success(isCreating ? "Игра успешно создана" : "Игра успешно обновлена");
       onClose();
     } catch (error) {
-      message.error("Ошибка при сохранении игры");
+      message.error(isCreating ? "Ошибка при создании игры" : "Ошибка при сохранении игры");
       console.error("Save error:", error);
     } finally {
       setLoading(false);
@@ -69,24 +77,25 @@ export default function GameEditModal({ game, open, onClose, onSave }: Props) {
 
   const handleClose = () => {
     form.resetFields();
-    setKeys(game?.keys as string[] || []);
+    setKeys([]);
     onClose();
   };
 
-  if (!game) return null;
+  const modalTitle = isCreating ? "Добавить новую игру" : "Редактировать игру";
+  const saveButtonText = isCreating ? "Создать" : "Сохранить";
 
   return (
     <Modal
       open={open}
       onCancel={handleClose}
-      title="Редактировать игру"
+      title={modalTitle}
       width={600}
       footer={[
         <Button key="cancel" onClick={handleClose}>
           Отмена
         </Button>,
         <Button key="save" type="primary" loading={loading} onClick={handleSave}>
-          Сохранить
+          {saveButtonText}
         </Button>,
       ]}
     >
