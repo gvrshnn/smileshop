@@ -19,10 +19,14 @@ export default function Home() {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => {
+  const fetchGames = () => {
     fetch("/api/games")
       .then((res) => res.json())
       .then((data) => setGames(data));
+  };
+
+  useEffect(() => {
+    fetchGames();
   }, []);
 
   const handleBuy = (order: any) => {
@@ -60,6 +64,7 @@ export default function Home() {
             setSelectedGame(game);
             setModalOpen(true);
           }}
+          onGamesUpdate={fetchGames}
         />
 
         <GameCardModal
