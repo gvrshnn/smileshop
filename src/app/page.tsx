@@ -6,6 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useFilter } from "@/context/FilterContext";
 import { Game } from "@prisma/client";
 import LoginModal from "@/components/LoginModal";
+import SignUpModal from "@/components/SignUpModal";
 import Header from "@/components/Header";
 import GameCardsRegistry from "@/components/GameCardsRegistry";
 import GameCardModal from "@/components/GameCardModal";
@@ -14,7 +15,8 @@ import { PlusOutlined } from "@ant-design/icons";
 
 export default function Home() {
   const { data: session } = useSession();
-  const [open, setOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [signUpOpen, setSignUpOpen] = useState(false)
   const { selectedFilter } = useFilter();
 
   const [games, setGames] = useState<Game[]>([]);
@@ -59,6 +61,16 @@ export default function Home() {
     }
   };
 
+  const switchToSignUp = () => {
+    setLoginOpen(false);
+    setSignUpOpen(true);
+  };
+
+  const switchToLogin = () => {
+    setSignUpOpen(false);
+    setLoginOpen(true);
+  };
+
   return (
     <>
       <Header />
@@ -84,12 +96,14 @@ export default function Home() {
             </div>
           </>
         ) : (
-          <>
-            <Button type="primary" onClick={() => setOpen(true)}>
+          <Space style={{ marginBottom: 20 }}>
+            <Button type="primary" onClick={() => setLoginOpen(true)}>
               Войти
             </Button>
-            <LoginModal open={open} onClose={() => setOpen(false)} />
-          </>
+            <Button type="default" onClick={() => setSignUpOpen(true)}>
+              Регистрация
+            </Button>
+          </Space>
         )}
 
         <p style={{ marginTop: 20 }}>
@@ -119,6 +133,19 @@ export default function Home() {
           onSave={handleCreateGame}
           isCreating={true}
         />
+
+        {/* Модальные окна авторизации */}
+        <LoginModal 
+          open={loginOpen} 
+          onClose={() => setLoginOpen(false)}
+          onSwitchToSignUp={switchToSignUp}
+        />
+        
+        <SignUpModal 
+          open={signUpOpen} 
+          onClose={() => setSignUpOpen(false)}
+        />
+
       </main>
     </>
   );

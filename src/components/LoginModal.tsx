@@ -1,14 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Modal, Form, Input, Button, message } from "antd";
+import { Modal, Form, Input, Button, message, Divider } from "antd";
 import { signIn, useSession } from "next-auth/react";
 
 interface LoginModalProps {
   open: boolean;
   onClose: () => void;
+  onSwitchToSignUp?: () => void;
 }
 
-export default function LoginModal({ open, onClose }: LoginModalProps) {
+export default function LoginModal({ open, onClose, onSwitchToSignUp }: LoginModalProps) {
   const [loading, setLoading] = useState(false);
   const [justLoggedIn, setJustLoggedIn] = useState(false);
   const [form] = Form.useForm();
@@ -40,6 +41,13 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
     setLoading(false);
   };
 
+  const handleSwitchToSignUp = () => {
+    form.resetFields();
+    setJustLoggedIn(false);
+    onClose();
+    onSwitchToSignUp?.();
+  };
+
   return (
     <Modal
       title="Вход в систему"
@@ -69,6 +77,18 @@ export default function LoginModal({ open, onClose }: LoginModalProps) {
           Войти
         </Button>
       </Form>
+
+      <Divider>или</Divider>
+
+      <Button 
+        type="default" 
+        block 
+        onClick={handleSwitchToSignUp}
+        style={{ marginTop: 8 }}
+      >
+        Зарегистрироваться
+      </Button>
+
     </Modal>
   );
 }

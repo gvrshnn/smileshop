@@ -10,7 +10,7 @@ type FilterContextType = {
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
 export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const [selectedFilter, setSelectedFilter] = useState("STEAM");
+  const [selectedFilter, setSelectedFilter] = useState("");
 
   return (
     <FilterContext.Provider value={{ selectedFilter, setSelectedFilter }}>
