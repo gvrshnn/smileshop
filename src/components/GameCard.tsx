@@ -57,7 +57,9 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
               display: "flex",
               flexDirection: "column",
               gap: 4,
+              padding: 4,
             }}
+            onMouseEnter={() => setIsHovered(true)}
           >
             <Popconfirm
               title="Удалить игру?"
