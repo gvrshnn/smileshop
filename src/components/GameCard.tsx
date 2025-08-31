@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Button, Popconfirm, message } from "antd";
+import { Card, Button, Popconfirm, message, Tag } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { useSession } from "next-auth/react";
 import { Game } from "@prisma/client";
@@ -17,13 +17,13 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
   const { data: session } = useSession();
   const [isHovered, setIsHovered] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  
+
   const hasKeys = (game.keys as string[]).length > 0;
   const isAdmin = session?.isAdmin;
 
   const handleDelete = async () => {
     if (!onDelete) return;
-    
+
     try {
       setDeleting(true);
       await onDelete(game.id);
@@ -48,7 +48,7 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
     >
       <Card
         hoverable
-        style={{ 
+        style={{
           width: '100%',
           height: '100%',
           position: "relative",
@@ -62,10 +62,10 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
           justifyContent: 'space-between'
         }}
         cover={
-          <img 
-            alt={game.title} 
-            src={game.imageUrl} 
-            style={{ 
+          <img
+            alt={game.title}
+            src={game.imageUrl}
+            style={{
               width: '100%',
               height: 200,
               objectFit: 'cover'
@@ -107,7 +107,7 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
                 }}
               />
             </Popconfirm>
-            
+
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -121,16 +121,60 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
           </div>
         )}
 
-        <Card.Meta title={game.title} description={`${game.price} ₽`} />
-        <div style={{ marginTop: 12 }}>
-          <Button
-            type="primary"
-            disabled={!hasKeys}
-            onClick={() => onBuy(game)}
-            block
-          >
-            {hasKeys ? "Купить" : "Нет в наличии"}
-          </Button>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <Card.Meta
+            title={
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginBottom: 4
+              }}>
+                <div style={{
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1
+                }}>
+                  {game.title}
+                </div>
+                <Tag
+                  style={{
+                    backgroundColor: 'transparent',
+                    color: 'grey',
+                    border: '1px solid grey',
+                    borderRadius: 20,
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    padding: '2px 8px',
+                    margin: 0,
+                    flexShrink: 0
+                  }}
+                >
+                  {game.platform}
+                </Tag>
+              </div>
+            }
+            description={
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff' }}>
+                {game.price} ₽
+              </div>
+            }
+          />
+
+          <div style={{ marginTop: 12 }}>
+            <Button
+              type="primary"
+              disabled={!hasKeys}
+              onClick={() => onBuy(game)}
+              block
+              size="small"
+            >
+              {hasKeys ? "Купить" : "Нет в наличии"}
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
