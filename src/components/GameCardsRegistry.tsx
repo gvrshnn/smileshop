@@ -72,9 +72,12 @@ export default function GameCardsRegistry({ games, onBuy, onGamesUpdate }: Props
 
   return (
     <>
-      <Row gutter={[16, 16]} style={{ marginTop: 20 }}>
+      <Row gutter={[16, 16]} style={{ marginTop: 20 }} justify="start">
         {filtered.map((game) => (
-          <Col key={game.id} xs={24} sm={12} md={8} lg={6}>
+          <Col key={game.id} xs={24} sm={12} md={8} lg={6} xl={4} xxl={3} style={{
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
             <GameCard 
               game={game} 
               onBuy={onBuy}

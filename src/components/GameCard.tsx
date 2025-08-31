@@ -40,11 +40,38 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{
+        width: '100%',
+        maxWidth: 240,
+        minWidth: 200
+      }}
     >
       <Card
         hoverable
-        style={{ width: 240, position: "relative" }}
-        cover={<img alt={game.title} src={game.imageUrl} />}
+        style={{ 
+          width: '100%',
+          height: '100%',
+          position: "relative",
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+        bodyStyle={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between'
+        }}
+        cover={
+          <img 
+            alt={game.title} 
+            src={game.imageUrl} 
+            style={{ 
+              width: '100%',
+              height: 200,
+              objectFit: 'cover'
+            }}
+          />
+        }
       >
         {/* Админские кнопки */}
         {isAdmin && isHovered && (
