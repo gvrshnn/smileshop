@@ -63,7 +63,7 @@ export default function LoginModal({ open, onClose, onSwitchToSignUp }: LoginMod
       <Form
         form={form}
         onFinish={onFinish}
-        initialValues={{ email: "admin@smileshop.local", password: "123456" }}
+        initialValues={{ email: "", password: "" }}
       >
         <Form.Item name="email" rules={[{ required: true, type: "email" }]}>
           <Input placeholder="Email" />
