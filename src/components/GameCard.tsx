@@ -158,7 +158,7 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
               </div>
             }
             description={
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#1890ff' }}>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'black' }}>
                 {game.price} ₽
               </div>
             }

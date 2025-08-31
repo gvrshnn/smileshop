@@ -14,9 +14,8 @@ export default function Header() {
   };
 
   return (
-    <header style={{ padding: 20, borderBottom: "1px solid #ddd" }}>
+    <header style={{ padding: 20, borderBottom: "1px solid #01f501" }}>
       <Space>
-        <Tooltip title="Показать все игры (сбросить фильтры)">
           <Button
             type={selectedFilter === "" ? "primary" : "default"}
             icon={<SmileOutlined />}
@@ -30,7 +29,6 @@ export default function Header() {
               justifyContent: "center"
             }}
           />
-        </Tooltip>
         
         {filters.map((f) => (
           <Button
