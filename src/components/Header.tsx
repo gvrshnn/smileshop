@@ -2,7 +2,7 @@
 import { Button, Space, Input } from "antd";
 import { SmileOutlined, SearchOutlined } from "@ant-design/icons";
 import { useFilter } from "@/context/FilterContext";
-import { useSession } from "next-auth/react"; // Импортируем useSession
+import { useSession, signOut } from "next-auth/react"; // Импортируем useSession
 import { useState, useEffect } from "react";
 
 interface HeaderProps {
@@ -48,9 +48,10 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
     setInputValue("");
   };
 
-  const handleSignOut = () => {
-    alert("Функция выхода должна быть реализована в основном компоненте или передана как пропс.");
-  };
+  // Функция для обработки выхода
+    const handleSignOut = async () => {
+      await signOut();
+    };
 
   return (
     <header style={{ padding: 20, borderBottom: "1px solid #01f501" }}>
