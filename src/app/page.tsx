@@ -7,7 +7,8 @@ import { useFilter } from "@/context/FilterContext";
 import { Game } from "@prisma/client";
 import LoginModal from "@/components/LoginModal";
 import SignUpModal from "@/components/SignUpModal";
-import Header from "@/components/Header";
+// Импортируем обновленный Header
+import Header from "@/components/Header"; // Убедитесь, что путь правильный
 import GameCardsRegistry from "@/components/GameCardsRegistry";
 import GameCardModal from "@/components/GameCardModal";
 import GameEditModal from "@/components/GameEditModal";
@@ -37,7 +38,7 @@ export default function Home() {
   const handleBuy = (order: { key: string }) => {
     alert(`Спасибо за покупку! Ваш ключ: ${order.key}`);
     setModalOpen(false);
-  };  
+  };
 
   const handleCreateGame = async (gameData: Partial<Game>) => {
     try {
@@ -53,7 +54,6 @@ export default function Home() {
         throw new Error("Ошибка при создании игры");
       }
 
-      // Обновляем список игр
       fetchGames();
       setCreateModalOpen(false);
     } catch (error) {
@@ -71,39 +71,55 @@ export default function Home() {
     setLoginOpen(true);
   };
 
+  // Функция для обработки выхода
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <>
-      <Header />
+      {/* Передаем пропсы в Header */}
+      <Header
+        onLoginClick={() => setLoginOpen(true)}
+        onSignUpClick={() => setSignUpOpen(true)}
+      />
       <main style={{ padding: 20 }}>
         {session ? (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
               <p>
-                Вы вошли как: {session.user?.email} {session.isAdmin && "(admin)"}
+                {/* Убираем отображение email из основного контента, так как оно теперь в Header */}
+                {/* Вы вошли как: {session.user?.email} {session.isAdmin && "(admin)"} */}
+                {/* Можно оставить информацию о роли, если нужно, но не дублировать email */}
+                {session.isAdmin && "(Вы администратор)"}
               </p>
               <Space>
                 {session.isAdmin && (
-                  <Button 
-                    type="primary" 
+                  <Button
+                    type="primary"
                     icon={<PlusOutlined />}
                     onClick={() => setCreateModalOpen(true)}
                   >
                     Добавить игру
                   </Button>
                 )}
-                <Button onClick={() => signOut()}>Выйти</Button>
+                {/* Кнопка "Выйти" теперь в Header, но можно оставить и здесь для удобства */}
+                {/* <Button onClick={handleSignOut}>Выйти</Button> */}
               </Space>
             </div>
           </>
         ) : (
-          <Space style={{ marginBottom: 20 }}>
-            <Button type="primary" onClick={() => setLoginOpen(true)}>
-              Войти
-            </Button>
-            <Button type="default" onClick={() => setSignUpOpen(true)}>
-              Регистрация
-            </Button>
-          </Space>
+          // Убираем Space с кнопками "Войти" и "Регистрация" из основного контента
+          // Они теперь в Header
+          <></>
+          // <Space style={{ marginBottom: 20 }}>
+          //   <Button type="primary" onClick={() => setLoginOpen(true)}>
+          //     Войти
+          //   </Button>
+          //   <Button type="default" onClick={() => setSignUpOpen(true)}>
+          //     Регистрация
+          //   </Button>
+          // </Space>
         )}
 
         <p style={{ marginTop: 20 }}>
@@ -135,14 +151,14 @@ export default function Home() {
         />
 
         {/* Модальные окна авторизации */}
-        <LoginModal 
-          open={loginOpen} 
+        <LoginModal
+          open={loginOpen}
           onClose={() => setLoginOpen(false)}
           onSwitchToSignUp={switchToSignUp}
         />
-        
-        <SignUpModal 
-          open={signUpOpen} 
+
+        <SignUpModal
+          open={signUpOpen}
           onClose={() => setSignUpOpen(false)}
         />
 

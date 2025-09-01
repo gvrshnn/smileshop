@@ -1,19 +1,28 @@
 "use client";
-
-import { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type FilterContextType = {
   selectedFilter: string;
   setSelectedFilter: (filter: string) => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
 };
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
-export function FilterProvider({ children }: { children: React.ReactNode }) {
-  const [selectedFilter, setSelectedFilter] = useState("");
+export function FilterProvider({ children }: { children: ReactNode }) {
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>(""); 
 
   return (
-    <FilterContext.Provider value={{ selectedFilter, setSelectedFilter }}>
+    <FilterContext.Provider
+      value={{
+        selectedFilter,
+        setSelectedFilter,
+        searchTerm,
+        setSearchTerm,
+      }}
+    >
       {children}
     </FilterContext.Provider>
   );

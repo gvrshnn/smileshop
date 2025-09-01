@@ -37,3 +37,11 @@ model Order {
   user User @relation(fields: [userId], references: [id])
   game Game @relation(fields: [gameId], references: [id])
 }
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  email     String
+  password  String   // храним сразу хэш пароля
+  expiresAt DateTime
+}
