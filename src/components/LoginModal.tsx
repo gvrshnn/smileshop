@@ -66,11 +66,11 @@ export default function LoginModal({ open, onClose, onSwitchToSignUp }: LoginMod
         initialValues={{ email: "", password: "" }}
       >
         <Form.Item name="email" rules={[{ required: true, type: "email" }]}>
-          <Input placeholder="Email" />
+          <Input placeholder="Email" style={{ fontSize: '16px' }} />
         </Form.Item>
         
         <Form.Item name="password" rules={[{ required: true }]}>
-          <Input.Password placeholder="Пароль" />
+          <Input.Password placeholder="Пароль" style={{ fontSize: '16px' }} />
         </Form.Item>
 
         <Button type="primary" htmlType="submit" block loading={loading}>

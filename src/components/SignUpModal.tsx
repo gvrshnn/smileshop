@@ -90,7 +90,7 @@ export default function SignUpModal({ open, onClose }: SignUpModalProps) {
               { type: "email", message: "Введите корректный email" }
             ]}
           >
-            <Input placeholder="example@email.com" />
+            <Input placeholder="example@email.com" style={{ fontSize: '16px' }} />
           </Form.Item>
           
           <Form.Item
@@ -101,7 +101,7 @@ export default function SignUpModal({ open, onClose }: SignUpModalProps) {
               { min: 6, message: "Пароль должен содержать минимум 6 символов" }
             ]}
           >
-            <Input.Password placeholder="Минимум 6 символов" />
+            <Input.Password placeholder="Минимум 6 символов" style={{ fontSize: '16px' }} />
           </Form.Item>
 
           <Form.Item
@@ -119,7 +119,7 @@ export default function SignUpModal({ open, onClose }: SignUpModalProps) {
               }),
             ]}
           >
-            <Input.Password placeholder="Повторите пароль" />
+            <Input.Password placeholder="Повторите пароль" style={{ fontSize: '16px' }} />
           </Form.Item>
 
           <Button type="primary" htmlType="submit" block loading={loading}>
