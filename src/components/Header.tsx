@@ -1,9 +1,11 @@
+// ./Header.tsx
 "use client";
 import { Button, Space, Input } from "antd";
 import { SmileOutlined, SearchOutlined } from "@ant-design/icons";
 import { useFilter } from "@/context/FilterContext";
-import { useSession, signOut } from "next-auth/react"; // Импортируем useSession
+import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
+import styles from './Header.module.css'; // Импорт CSS модуля
 
 interface HeaderProps {
   onLoginClick: () => void;
@@ -13,7 +15,7 @@ interface HeaderProps {
 const filters = ["STEAM", "XBOX", "PS"];
 
 export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
-  const { data: session } = useSession(); // Получаем данные сессии
+  const { data: session } = useSession();
   const { selectedFilter, setSelectedFilter, searchTerm, setSearchTerm } = useFilter();
   const [inputValue, setInputValue] = useState(searchTerm);
 
@@ -48,16 +50,17 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
     setInputValue("");
   };
 
-  // Функция для обработки выхода
-    const handleSignOut = async () => {
-      await signOut();
-    };
+  const handleSignOut = async () => {
+    await signOut();
+  };
 
   return (
     <header style={{ padding: 20, borderBottom: "1px solid #01f501" }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <div>
-          <Space>
+      {/* Используем класс из модуля CSS для основного контейнера */}
+      <div className={styles.headerContent}>
+        {/* Контейнер фильтров */}
+        <div className={styles.filtersContainer}>
+          <Space wrap>
             <Button
               type={(selectedFilter === "" && !searchTerm) ? "primary" : "default"}
               icon={<SmileOutlined />}
@@ -88,12 +91,14 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
           </Space>
         </div>
 
-        <div style={{ flexGrow: 1, display: 'flex', justifyContent: 'center', margin: '0 20px' }}>
-          <form onSubmit={handleSearch} style={{ width: '100%', maxWidth: 400 }}>
+        {/* Контейнер поиска */}
+        <div className={styles.searchContainer}>
+          <form onSubmit={handleSearch} style={{ width: '100%' }}>
             <Input
               placeholder="Поиск игр..."
               value={inputValue}
               onChange={handleInputChange}
+              className={styles.searchInput}
               suffix={
                 inputValue ? (
                   <Button
@@ -107,27 +112,33 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
                   <SearchOutlined />
                 )
               }
-              style={{ width: '100%' }}
             />
           </form>
         </div>
 
-        <div>
-          {session ? (
-            <Space>
-              <span>Привет, {session.user?.email}</span>
-              <Button onClick={handleSignOut}>Выйти</Button>
-            </Space>
-          ) : (
-            <Space>
-              <Button type="primary" onClick={onLoginClick}>
-                Войти
-              </Button>
-              <Button type="default" onClick={onSignUpClick}>
-                Регистрация
-              </Button>
-            </Space>
-          )}
+        {/* Контейнер авторизации */}
+        <div className={styles.authContainer}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}> {/* Добавлен alignItems: 'center' */}
+            {session ? (
+              <Space size="small"> {/* Добавлен size="small" */}
+                <span style={{ whiteSpace: 'nowrap', fontSize: '0.9em' }}> {/* Уменьшен шрифт */}
+                  Привет, {session.user?.email?.split('@')[0]} {/* Сокращаем email до имени */}
+                </span>
+                <Button onClick={handleSignOut} size="small"> {/* size="small" для кнопки */}
+                  Выйти
+                </Button>
+              </Space>
+            ) : (
+              <Space size="small"> {/* Добавлен size="small" */}
+                <Button type="primary" onClick={onLoginClick} size="small">
+                  Войти
+                </Button>
+                <Button type="default" onClick={onSignUpClick} size="small">
+                  Регистрация
+                </Button>
+              </Space>
+            )}
+          </div>
         </div>
       </div>
     </header>

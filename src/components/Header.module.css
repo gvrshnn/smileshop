@@ -1,0 +1,68 @@
+/* ./Header.module.css */
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.filtersContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.searchForm {
+  width: 100%;
+  max-width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+}
+
+.authContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+@media (min-width: 716px) {
+  .headerContent {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filtersContainer {
+    justify-content: flex-start;
+    width: auto;
+    margin-bottom: 0;
+  }
+
+  .searchContainer {
+    margin: 0;
+    width: auto;
+    max-width: 400px;
+  }
+
+  .authContainer {
+    justify-content: flex-end;
+    width: auto;
+    margin-top: 0;
+    flex-grow: 1;
+  }
+}
