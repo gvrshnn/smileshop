@@ -120,20 +120,20 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
         <div className={styles.authContainer}>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}> {/* Добавлен alignItems: 'center' */}
             {session ? (
-              <Space size="small"> {/* Добавлен size="small" */}
+              <Space size="middle"> {/* Добавлен size="small" */}
                 <span style={{ whiteSpace: 'nowrap', fontSize: '0.9em' }}> {/* Уменьшен шрифт */}
                   Привет, {session.user?.email?.split('@')[0]} {/* Сокращаем email до имени */}
                 </span>
-                <Button onClick={handleSignOut} size="small"> {/* size="small" для кнопки */}
+                <Button onClick={handleSignOut}> {/* size="small" для кнопки */}
                   Выйти
                 </Button>
               </Space>
             ) : (
-              <Space size="small"> {/* Добавлен size="small" */}
-                <Button type="primary" onClick={onLoginClick} size="small">
+              <Space size="middle"> {/* Добавлен size="small" */}
+                <Button type="primary" onClick={onLoginClick}>
                   Войти
                 </Button>
-                <Button type="default" onClick={onSignUpClick} size="small">
+                <Button type="default" onClick={onSignUpClick}>
                   Регистрация
                 </Button>
               </Space>

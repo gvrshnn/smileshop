@@ -170,7 +170,6 @@ export default function GameCard({ game, onBuy, onEdit, onDelete }: GameCardProp
               disabled={!hasKeys}
               onClick={() => onBuy(game)}
               block
-              size="small"
             >
               {hasKeys ? "Купить" : "Нет в наличии"}
             </Button>
