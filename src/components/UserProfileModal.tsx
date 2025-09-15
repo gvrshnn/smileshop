@@ -205,6 +205,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                         <Input.Password
                             placeholder="Введите старый пароль"
                             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            style={{ fontSize: '16px' }}
                         />
                     </Form.Item>
                     <Form.Item
@@ -220,6 +221,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                         <Input.Password
                             placeholder="Введите новый пароль"
                             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            style={{ fontSize: '16px' }}
                         />
                     </Form.Item>
                     <Form.Item
@@ -243,6 +245,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                         <Input.Password
                             placeholder="Подтвердите новый пароль"
                             iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            style={{ fontSize: '16px' }}
                         />
                     </Form.Item>
                     <Form.Item>
