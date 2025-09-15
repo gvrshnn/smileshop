@@ -1,20 +1,21 @@
 // ./Header.tsx
 "use client";
 import { Button, Space, Input } from "antd";
-import { SmileOutlined, SearchOutlined } from "@ant-design/icons";
+import { SmileOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
 import { useFilter } from "@/context/FilterContext";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import styles from './Header.module.css'; // Импорт CSS модуля
+import styles from './Header.module.css'; 
 
 interface HeaderProps {
   onLoginClick: () => void;
   onSignUpClick: () => void;
+  onProfileClick: () => void;
 }
 
 const filters = ["STEAM", "XBOX", "PS"];
 
-export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
+export default function Header({ onLoginClick, onSignUpClick, onProfileClick }: HeaderProps) {
   const { data: session } = useSession();
   const { selectedFilter, setSelectedFilter, searchTerm, setSearchTerm } = useFilter();
   const [inputValue, setInputValue] = useState(searchTerm);
@@ -56,9 +57,7 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
 
   return (
     <header style={{ padding: 20, borderBottom: "1px solid #01f501" }}>
-      {/* Используем класс из модуля CSS для основного контейнера */}
       <div className={styles.headerContent}>
-        {/* Контейнер фильтров */}
         <div className={styles.filtersContainer}>
           <Space wrap>
             <Button
@@ -91,7 +90,6 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
           </Space>
         </div>
 
-        {/* Контейнер поиска */}
         <div className={styles.searchContainer}>
           <form onSubmit={handleSearch} style={{ width: '100%' }}>
             <Input
@@ -116,20 +114,34 @@ export default function Header({ onLoginClick, onSignUpClick }: HeaderProps) {
           </form>
         </div>
 
-        {/* Контейнер авторизации */}
         <div className={styles.authContainer}>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}> {/* Добавлен alignItems: 'center' */}
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}> 
             {session ? (
-              <Space size="middle"> {/* Добавлен size="small" */}
-                <span style={{ whiteSpace: 'nowrap', fontSize: '0.9em' }}> {/* Уменьшен шрифт */}
-                  Привет, {session.user?.email?.split('@')[0]} {/* Сокращаем email до имени */}
+              <Space size="middle"> 
+                <span style={{ whiteSpace: 'nowrap', fontSize: '0.9em' }}>
+                  Привет, {session.user?.email?.split('@')[0]} 
                 </span>
-                <Button onClick={handleSignOut}> {/* size="small" для кнопки */}
+
+                <Button                  
+                  icon={<UserOutlined />} 
+                  onClick={onProfileClick} 
+                  aria-label="Личный кабинет"
+                  style={{ 
+                    borderRadius: "50%",
+                    width: 40,
+                    height: 40,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                />
+
+                <Button onClick={handleSignOut}> 
                   Выйти
                 </Button>
               </Space>
             ) : (
-              <Space size="middle"> {/* Добавлен size="small" */}
+              <Space size="middle"> 
                 <Button type="primary" onClick={onLoginClick}>
                   Войти
                 </Button>
