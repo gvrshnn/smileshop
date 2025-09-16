@@ -16,13 +16,21 @@ const Footer = () => {
           <Title level={4} className={styles.sectionTitle}>Контакты</Title>
           <div className={styles.contactItem}>
             <PhoneOutlined className={styles.icon} />
-            {/* Явно задаем цвет текста через пропс style */}
             <Text style={{ color: 'inherit' }}><strong>Телефон:</strong> +7 (905) 551-05-50</Text>
           </div>
           <div className={styles.contactItem}>
             <MailOutlined className={styles.icon} />
-            {/* Явно задаем цвет текста через пропс style */}
             <Text style={{ color: 'inherit' }}><strong>Email:</strong> germanvershinin@yandex.ru</Text>
+          </div>
+          <div className={styles.contactItem}>
+            <a 
+              href="https://disk.yandex.ru/i/HIMJZEBkz_Ws1g" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ color: 'inherit' }}
+            >
+              Публичная оферта
+            </a>
           </div>
         </div>
 
@@ -46,7 +54,6 @@ const Footer = () => {
       </div>
 
       <div className={styles.copyright}>
-        {/* Явно задаем цвет для копирайта */}
         <Text type="secondary" style={{ color: 'inherit', opacity: 0.8 }}>&copy; {new Date().getFullYear()} SMILESHOP. Все права защищены.</Text>
       </div>
     </footer>
