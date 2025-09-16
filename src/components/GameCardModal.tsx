@@ -60,6 +60,9 @@ export default function GameCardModal({ game, open, onClose }: Props) {
       >
         {hasKeys ? "Купить" : "Нет в наличии"}
       </Button>
+      <p style={{ marginTop: 16, fontSize: '12px', color: '#888' }}>
+        После оплаты промокод к игре придёт на e-mail, указанный при регистрации. Проверьте папку «Входящие» и, если письма нет, — папку «Спам».
+      </p>
     </Modal>
   );
 }
