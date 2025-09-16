@@ -1,0 +1,90 @@
+/* src/components/Footer.module.css */
+.footer {
+  background-color: #000;
+  color: #ffffff;
+  padding: 20px 20px 10px 20px;
+  border-top: 1px solid #01f501;
+  margin-top: auto;
+  /* Добавляем font-family для всего футера, если нужно */
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; */
+}
+
+.footerContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  /* Убираем color отсюда, пусть элементы сами наследуют */
+}
+
+.section {
+  flex: 1;
+  min-width: 250px;
+  /* Гарантируем наследование цвета */
+  color: inherit;
+}
+
+.sectionTitle {
+  /* Убираем !important, если стиль применяется через CSS модуль корректно */
+  color: #01f501;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.contactItem,
+.requisitesItem {
+  display: block; /* Блочные элементы для переноса строк */
+  margin-bottom: 8px;
+  color: inherit;
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+}
+
+.icon {
+  margin-right: 8px;
+  /* Убираем !important */
+  color: #01f501;
+  min-width: 16px;
+}
+
+.divider {
+  height: auto;
+  align-self: stretch;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 0 10px;
+}
+
+.copyright {
+  text-align: center;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: inherit;
+  /* Убираем !important */
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .contactItem {
+    justify-content: center;
+  }
+
+  .divider {
+    width: 80%;
+    height: 1px;
+    margin: 15px auto;
+  }
+
+  .section {
+    min-width: 100%;
+  }
+}

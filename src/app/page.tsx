@@ -13,6 +13,7 @@ import GameCardsRegistry from "@/components/GameCardsRegistry";
 import GameCardModal from "@/components/GameCardModal";
 import GameEditModal from "@/components/GameEditModal";
 import { PlusOutlined } from "@ant-design/icons";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -143,6 +144,7 @@ export default function Home() {
         />
 
       </main>
+      <Footer />
     </>
   );
 }
