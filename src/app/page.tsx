@@ -1,8 +1,8 @@
+// ./page.tsx
 "use client";
-
-import { Button, Space } from "antd";
+import { Button, Space, Spin } from "antd"; // 1. Импортируем Spin
 import { useState, useEffect } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react"; // Исправлен импорт
 import { useFilter } from "@/context/FilterContext";
 import { Game } from "@prisma/client";
 import LoginModal from "@/components/LoginModal";
@@ -26,11 +26,20 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [userProfileOpen, setUserProfileOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // 2. Добавляем состояние загрузки
 
   const fetchGames = () => {
+    // setLoading(true); // Эту строку можно убрать, так как loading уже true изначально
     fetch("/api/games")
       .then((res) => res.json())
-      .then((data) => setGames(data));
+      .then((data) => {
+         setGames(data);
+         setLoading(false); // 3. Сбрасываем загрузку в false после получения данных
+       })
+      .catch((err) => {
+        console.error("Ошибка загрузки игр:", err);
+        setLoading(false); // На случай ошибки тоже сбрасываем
+      });
   };
 
   useEffect(() => {
@@ -59,6 +68,8 @@ export default function Home() {
       fetchGames();
       setCreateModalOpen(false);
     } catch (error) {
+      console.error("Ошибка создания игры:", error);
+      // Можно добавить message.error() здесь
       throw error;
     }
   };
@@ -68,6 +79,16 @@ export default function Home() {
     setSignUpOpen(true);
   };
 
+  // 4. Условный рендеринг: лоадер ИЛИ содержимое страницы
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
+        <Spin size="large" tip="Загрузка магазина..." />
+      </div>
+    );
+  }
+
+  // 5. Если загрузка завершена, рендерим обычную страницу
   return (
     <>
       <Header
@@ -75,7 +96,8 @@ export default function Home() {
         onSignUpClick={() => setSignUpOpen(true)}
         onProfileClick={() => setUserProfileOpen(true)}
       />
-      <main style={{ padding: 20 }}>
+      {/* Добавляем отступы к main */}
+      <main style={{ padding: 20, marginTop: 20, marginBottom: 20 }}>
         {session ? (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
