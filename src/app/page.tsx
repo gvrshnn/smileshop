@@ -1,8 +1,8 @@
 // ./page.tsx
 "use client";
-import { Button, Space, Spin } from "antd"; // 1. Импортируем Spin
+import { Button, Space, Spin } from "antd";
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react"; // Исправлен импорт
+import { useSession } from "next-auth/react";
 import { useFilter } from "@/context/FilterContext";
 import { Game } from "@prisma/client";
 import LoginModal from "@/components/LoginModal";
@@ -26,19 +26,18 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [userProfileOpen, setUserProfileOpen] = useState(false);
-  const [loading, setLoading] = useState(true); // 2. Добавляем состояние загрузки
+  const [loading, setLoading] = useState(true);
 
   const fetchGames = () => {
-    // setLoading(true); // Эту строку можно убрать, так как loading уже true изначально
     fetch("/api/games")
       .then((res) => res.json())
       .then((data) => {
          setGames(data);
-         setLoading(false); // 3. Сбрасываем загрузку в false после получения данных
+         setLoading(false);
        })
       .catch((err) => {
         console.error("Ошибка загрузки игр:", err);
-        setLoading(false); // На случай ошибки тоже сбрасываем
+        setLoading(false);
       });
   };
 
@@ -69,7 +68,6 @@ export default function Home() {
       setCreateModalOpen(false);
     } catch (error) {
       console.error("Ошибка создания игры:", error);
-      // Можно добавить message.error() здесь
       throw error;
     }
   };
@@ -79,7 +77,6 @@ export default function Home() {
     setSignUpOpen(true);
   };
 
-  // 4. Условный рендеринг: лоадер ИЛИ содержимое страницы
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
@@ -88,16 +85,22 @@ export default function Home() {
     );
   }
 
-  // 5. Если загрузка завершена, рендерим обычную страницу
   return (
-    <>
+    // Добавляем обертку с минимальной высотой 100vh
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header
         onLoginClick={() => setLoginOpen(true)}
         onSignUpClick={() => setSignUpOpen(true)}
         onProfileClick={() => setUserProfileOpen(true)}
       />
-      {/* Добавляем отступы к main */}
-      <main style={{ padding: 20, marginTop: 20, marginBottom: 20 }}>
+      
+      {/* Основной контент с flex-grow для заполнения оставшегося пространства */}
+      <main style={{ 
+        flex: 1, 
+        padding: 20, 
+        display: 'flex', 
+        flexDirection: 'column' 
+      }}>
         {session ? (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
@@ -125,14 +128,17 @@ export default function Home() {
           Текущий фильтр: <b>{selectedFilter || "Все платформы"}</b>
         </p>
 
-        <GameCardsRegistry
-          games={games}
-          onBuy={(game) => {
-            setSelectedGame(game);
-            setModalOpen(true);
-          }}
-          onGamesUpdate={fetchGames}
-        />
+        {/* Контейнер для GameCardsRegistry с возможностью роста */}
+        <div style={{ flex: 1 }}>
+          <GameCardsRegistry
+            games={games}
+            onBuy={(game) => {
+              setSelectedGame(game);
+              setModalOpen(true);
+            }}
+            onGamesUpdate={fetchGames}
+          />
+        </div>
 
         <GameCardModal
           game={selectedGame}
@@ -164,9 +170,9 @@ export default function Home() {
           open={userProfileOpen}
           onClose={() => setUserProfileOpen(false)}
         />
-
       </main>
+      
       <Footer />
-    </>
+    </div>
   );
 }
