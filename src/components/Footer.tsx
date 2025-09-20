@@ -23,9 +23,9 @@ const Footer = () => {
             <Text style={{ color: 'inherit' }}><strong>Email:</strong> germanvershinin@yandex.ru</Text>
           </div>
           <div className={styles.contactItem}>
-            <a 
-              href="https://disk.yandex.ru/i/HIMJZEBkz_Ws1g" 
-              target="_blank" 
+            <a
+              href="https://disk.yandex.ru/i/HIMJZEBkz_Ws1g"
+              target="_blank"
               rel="noopener noreferrer"
               style={{ color: 'inherit' }}
             >
@@ -45,10 +45,10 @@ const Footer = () => {
             <Text style={{ color: 'inherit' }}>Индивидуальный предприниматель Вершинин Герман Александрович</Text>
           </div>
           <div className={styles.requisitesItem}>
-            <Text style={{ color: 'inherit' }}><strong>ИНН:</strong> 5024 1363 9269</Text>
+            <Text style={{ color: 'inherit' }}><strong>ИНН:</strong> 502413639269 </Text>
           </div>
           <div className={styles.requisitesItem}>
-            <Text style={{ color: 'inherit' }}><strong>ОГРН:</strong> 32150 81000 02302</Text>
+            <Text style={{ color: 'inherit' }}><strong>ОГРНИП:</strong> 321508100002302 </Text>
           </div>
         </div>
       </div>
