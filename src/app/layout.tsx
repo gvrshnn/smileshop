@@ -5,6 +5,9 @@ import "antd/dist/reset.css";
 import Provider from "@/components/SessionProvider";
 import { ConfigProvider } from "antd";
 import { FilterProvider } from "@/context/FilterContext";
+// --- Добавлен импорт клиентского компонента ---
+import TBankIntegration from "@/components/TBankIntegration";
+// --- Конец добавления ---
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,7 +39,13 @@ export default function RootLayout({
           }}
         >
           <Provider>
-            <FilterProvider>{children}</FilterProvider>
+            <FilterProvider>
+              {children}
+              {/* --- Добавлен скрипт и компонент Т-Кассы --- */}
+              <script src="https://integrationjs.tbank.ru/integration.js" async />
+              <TBankIntegration />
+              {/* --- Конец добавления --- */}
+            </FilterProvider>
           </Provider>
         </ConfigProvider>
       </body>

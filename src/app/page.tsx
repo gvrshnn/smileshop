@@ -7,7 +7,7 @@ import { useFilter } from "@/context/FilterContext";
 import { Game } from "@prisma/client";
 import LoginModal from "@/components/LoginModal";
 import SignUpModal from "@/components/SignUpModal";
-import UserProfileModal from "@/components/UserProfileModal"; 
+import UserProfileModal from "@/components/UserProfileModal";
 import Header from "@/components/Header";
 import GameCardsRegistry from "@/components/GameCardsRegistry";
 import GameCardModal from "@/components/GameCardModal";
@@ -32,9 +32,9 @@ export default function Home() {
     fetch("/api/games")
       .then((res) => res.json())
       .then((data) => {
-         setGames(data);
-         setLoading(false);
-       })
+        setGames(data);
+        setLoading(false);
+      })
       .catch((err) => {
         console.error("Ошибка загрузки игр:", err);
         setLoading(false);
@@ -45,9 +45,40 @@ export default function Home() {
     fetchGames();
   }, []);
 
-  const handleBuy = (order: { key: string }) => {
-    alert(`Спасибо за покупку! Ваш ключ: ${order.key}`);
-    setModalOpen(false);
+  const handleBuy = async (game: Game) => {
+    try {
+      // 1. Создаем заказ в БД
+      const orderResponse = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gameId: game.id,
+          amount: game.price * 100, // в копейках
+        }),
+      });
+
+      const order = await orderResponse.json();
+
+      // 2. Инициализируем оплату через T-Bank
+      const initResponse = await fetch("/api/tbank/init", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: order.id,
+          amount: game.price * 100,
+          description: `Покупка ${game.title}`,
+        }),
+      });
+
+      const { paymentUrl } = await initResponse.json();
+
+      // 3. Перенаправляем на оплату или открываем модальное окно
+      window.location.href = paymentUrl;
+
+    } catch (error) {
+      console.error("Ошибка при создании заказа:", error);
+      alert("Ошибка при оформлении заказа");
+    }
   };
 
   const handleCreateGame = async (gameData: Partial<Game>) => {
@@ -93,13 +124,13 @@ export default function Home() {
         onSignUpClick={() => setSignUpOpen(true)}
         onProfileClick={() => setUserProfileOpen(true)}
       />
-      
+
       {/* Основной контент с flex-grow для заполнения оставшегося пространства */}
-      <main style={{ 
-        flex: 1, 
-        padding: 20, 
-        display: 'flex', 
-        flexDirection: 'column' 
+      <main style={{
+        flex: 1,
+        padding: 20,
+        display: 'flex',
+        flexDirection: 'column'
       }}>
         {session ? (
           <>
@@ -144,7 +175,7 @@ export default function Home() {
           game={selectedGame}
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          onBuy={handleBuy}
+          // onBuy={handleBuy}
         />
 
         <GameEditModal
@@ -171,7 +202,7 @@ export default function Home() {
           onClose={() => setUserProfileOpen(false)}
         />
       </main>
-      
+
       <Footer />
     </div>
   );
