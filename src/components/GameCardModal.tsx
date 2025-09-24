@@ -3,7 +3,6 @@
 import { Modal, Button, message } from "antd";
 import { useSession } from "next-auth/react";
 import { Game } from "@prisma/client";
-import Image from 'next/image'; // Импорт next/image
 
 interface Props {
   game: Game | null;
@@ -23,15 +22,23 @@ export default function GameCardModal({ game, open, onClose }: Props) {
       message.error("Пожалуйста, войдите в систему");
       return;
     }
+
+    // Добавьте эти строки:
+    const userEmail = session.user.email;
+
+    if (!userEmail) {
+      message.error("Для оплаты требуется email или телефон пользователя");
+      return;
+    }
+
     try {
-      // 1. Вызываем ваш существующий API роут для создания заказа и получения PaymentURL
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: parseInt(session.user.id), // Передаем userId
-          gameId: game.id,                   // Передаем gameId
-          // paymentType: 'tbank' // Можно добавить, если логика в API зависит от типа
+          userId: parseInt(session.user.id),
+          gameId: game.id,
+          email: userEmail,     // ← ДОБАВИТЬ
         }),
       });
       if (!res.ok) {

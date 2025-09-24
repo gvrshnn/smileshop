@@ -14,9 +14,10 @@ interface ReceiptItem {
   Ean13?: string;
 }
 
+// Делаем Phone необязательным в Receipt
 interface Receipt {
   Email: string;
-  Phone: string;
+  Phone?: string; // Теперь необязательный
   Taxation: string;
   Items: ReceiptItem[];
 }
@@ -88,8 +89,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Отсутствуют userId или gameId" }, { status: 400 });
   }
   
-  if (!email || !phone) {
-    return NextResponse.json({ error: "Отсутствуют email или phone" }, { status: 400 });
+  // Делаем phone необязательным, проверяем только email
+  if (!email) {
+    return NextResponse.json({ error: "Отсутствует email" }, { status: 400 });
   }
   
   if (parseInt(session.user.id) !== userId) {
@@ -157,15 +159,18 @@ export async function POST(req: Request) {
     }
   ];
 
+  // Создаем Receipt с опциональным phone
   const receipt: Receipt = {
     Email: email,
-    Phone: phone.replace(/[^\d+]/g, ''), // Очищаем номер телефона
-    Taxation: "osn", // Общая система налогообложения - уточните для вашего случая
+    // Добавляем Phone только если он есть и не пустой
+    ...(phone && { Phone: phone.replace(/[^\d+]/g, '') }),
+    Taxation: "osn",
     Items: receiptItems
   };
 
   type BaseRequestParamsType = Omit<TBankInitRequest, 'Token'>;
 
+  // Формируем DATA с опциональным phone
   const baseRequestParams: BaseRequestParamsType = {
     TerminalKey: terminalKey,
     Amount: amountInKopecks,
@@ -173,8 +178,9 @@ export async function POST(req: Request) {
     Description: `Покупка цифрового ключа для игры ${game.title}`,
     DATA: {
       connection_type: "Widget",
-      Phone: phone,
-      Email: email
+      Email: email,
+      // Добавляем Phone только если он есть
+      ...(phone && { Phone: phone })
     },
     Receipt: receipt
   };
