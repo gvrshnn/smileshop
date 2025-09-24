@@ -1,4 +1,4 @@
-// ./page.tsx
+// ./src/app/page.tsx
 "use client";
 import { Button, Space, Spin } from "antd";
 import { useState, useEffect } from "react";
@@ -20,7 +20,6 @@ export default function Home() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false)
   const { selectedFilter } = useFilter();
-
   const [games, setGames] = useState<Game[]>([]);
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,41 +44,37 @@ export default function Home() {
     fetchGames();
   }, []);
 
-  const handleBuy = async (game: Game) => {
-    try {
-      // 1. Создаем заказ в БД
-      const orderResponse = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gameId: game.id,
-          amount: game.price * 100, // в копейках
-        }),
-      });
-
-      const order = await orderResponse.json();
-
-      // 2. Инициализируем оплату через T-Bank
-      const initResponse = await fetch("/api/tbank/init", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: order.id,
-          amount: game.price * 100,
-          description: `Покупка ${game.title}`,
-        }),
-      });
-
-      const { paymentUrl } = await initResponse.json();
-
-      // 3. Перенаправляем на оплату или открываем модальное окно
-      window.location.href = paymentUrl;
-
-    } catch (error) {
-      console.error("Ошибка при создании заказа:", error);
-      alert("Ошибка при оформлении заказа");
-    }
-  };
+  // handleBuy удален, так как не используется напрямую в этом компоненте
+  // const handleBuy = async (game: Game) => {
+  //   try {
+  //     // 1. Создаем заказ в БД
+  //     const orderResponse = await fetch("/api/orders", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         gameId: game.id,
+  //         amount: game.price * 100, // в копейках
+  //       }),
+  //     });
+  //     const order = await orderResponse.json();
+  //     // 2. Инициализируем оплату через T-Bank
+  //     const initResponse = await fetch("/api/tbank/init", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         orderId: order.id,
+  //         amount: game.price * 100,
+  //         description: `Покупка ${game.title}`,
+  //       }),
+  //     });
+  //     const { paymentUrl } = await initResponse.json();
+  //     // 3. Перенаправляем на оплату или открываем модальное окно
+  //     window.location.href = paymentUrl;
+  //   } catch (error) {
+  //     console.error("Ошибка при создании заказа:", error);
+  //     alert("Ошибка при оформлении заказа");
+  //   }
+  // };
 
   const handleCreateGame = async (gameData: Partial<Game>) => {
     try {
@@ -90,11 +85,9 @@ export default function Home() {
         },
         body: JSON.stringify(gameData),
       });
-
       if (!response.ok) {
         throw new Error("Ошибка при создании игры");
       }
-
       fetchGames();
       setCreateModalOpen(false);
     } catch (error) {
@@ -108,13 +101,16 @@ export default function Home() {
     setSignUpOpen(true);
   };
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
-        <Spin size="large" tip="Загрузка магазина..." />
-      </div>
-    );
-  }
+if (loading) {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
+      {/* Убираем tip напрямую из Spin */}
+      <Spin size="large" /> 
+      {/* Или, если нужно отобразить текст рядом или внутри: */}
+      {/* <div><Spin size="large" /><div style={{ marginTop: 16 }}>Загрузка магазина...</div></div> */}
+    </div>
+  );
+}
 
   return (
     // Добавляем обертку с минимальной высотой 100vh
@@ -124,7 +120,6 @@ export default function Home() {
         onSignUpClick={() => setSignUpOpen(true)}
         onProfileClick={() => setUserProfileOpen(true)}
       />
-
       {/* Основной контент с flex-grow для заполнения оставшегося пространства */}
       <main style={{
         flex: 1,
@@ -154,11 +149,9 @@ export default function Home() {
         ) : (
           <></>
         )}
-
         <p style={{ marginTop: 20 }}>
           Текущий фильтр: <b>{selectedFilter || "Все платформы"}</b>
         </p>
-
         {/* Контейнер для GameCardsRegistry с возможностью роста */}
         <div style={{ flex: 1 }}>
           <GameCardsRegistry
@@ -170,14 +163,12 @@ export default function Home() {
             onGamesUpdate={fetchGames}
           />
         </div>
-
         <GameCardModal
           game={selectedGame}
           open={modalOpen}
           onClose={() => setModalOpen(false)}
           // onBuy={handleBuy}
         />
-
         <GameEditModal
           game={null}
           open={createModalOpen}
@@ -185,24 +176,20 @@ export default function Home() {
           onSave={handleCreateGame}
           isCreating={true}
         />
-
         <LoginModal
           open={loginOpen}
           onClose={() => setLoginOpen(false)}
           onSwitchToSignUp={switchToSignUp}
         />
-
         <SignUpModal
           open={signUpOpen}
           onClose={() => setSignUpOpen(false)}
         />
-
         <UserProfileModal
           open={userProfileOpen}
           onClose={() => setUserProfileOpen(false)}
         />
       </main>
-
       <Footer />
     </div>
   );

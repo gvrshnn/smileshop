@@ -1,11 +1,34 @@
-// src/components/TBankIntegration.tsx
+// ./src/components/TBankIntegration.tsx
 "use client"; // <-- Важно!
-
 import { useEffect } from 'react';
+
+// Определение типов на основе инструкции Т-Банк
+interface PaymentIntegrationHelpers {
+  request(url: string, method: string, params: any): Promise<any>; // Можно уточнить типы params и возвращаемого значения
+}
+
+interface PaymentIntegrationInstance {
+  init(config: IntegrationInitConfig): Promise<void>;
+  helpers: PaymentIntegrationHelpers;
+  // Другие методы, если нужны
+}
+
+interface IntegrationInitConfig {
+  terminalKey: string | undefined;
+  product: 'eacq';
+  features: {
+    payment?: {
+      // container?: HTMLElement | null; // Убран, так как не используется
+      paymentStartCallback?: (paymentType: string, orderId: string) => Promise<string>;
+      // Другие настройки payment, если нужны
+    };
+    // Другие features, если нужны
+  };
+}
 
 declare global {
   interface Window {
-    PaymentIntegration: any; // Добавьте более точные типы, если нужно
+    PaymentIntegration: PaymentIntegrationInstance | undefined;
     onPaymentIntegrationLoad?: () => void;
   }
 }
@@ -16,7 +39,12 @@ export default function TBankIntegration() {
     window.onPaymentIntegrationLoad = () => {
       console.log("T-Bank PaymentIntegration script loaded");
       try {
-        const initConfig = {
+        if (!window.PaymentIntegration) {
+          console.error("PaymentIntegration is not available on window object.");
+          return;
+        }
+
+        const initConfig: IntegrationInitConfig = {
           terminalKey: process.env.NEXT_PUBLIC_TINKOFF_TERMINAL_KEY,
           product: 'eacq',
           features: {
@@ -43,11 +71,13 @@ export default function TBankIntegration() {
           },
         };
         // Инициализируем PaymentIntegration
-        window.PaymentIntegration.init(initConfig).catch((err: any) => {
+        window.PaymentIntegration.init(initConfig).catch((err: unknown) => { // Исправлен тип any на unknown
           console.error("Error initializing PaymentIntegration:", err);
+          // Можно добавить более конкретную обработку ошибок, если типизировать err
         });
       } catch (err) {
         console.error("Error in onPaymentIntegrationLoad:", err);
+        // Можно добавить более конкретную обработку ошибок, если типизировать err
       }
     };
 

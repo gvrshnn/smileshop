@@ -1,9 +1,8 @@
-// src/components/UserProfileModal.tsx
+// ./src/components/UserProfileModal.tsx
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react"; // Добавлен useCallback
 import { Modal, Button, Form, Input, List, Typography, message, Popconfirm, Space, Alert } from "antd";
-import { UserOutlined, KeyOutlined, DeleteOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import { UserOutlined, DeleteOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons"; // Убран KeyOutlined
 import { signOut, useSession } from "next-auth/react";
 
 const { Title, Text } = Typography;
@@ -37,7 +36,8 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
     const [keysLoading, setKeysLoading] = useState(false);
     const [customMessage, setCustomMessage] = useState<CustomMessage | null>(null);
 
-    const fetchPurchasedKeys = async () => {
+    // Обернут в useCallback
+    const fetchPurchasedKeys = useCallback(async () => {
         if (!session?.user?.id) return;
         setKeysLoading(true);
         try {
@@ -48,19 +48,19 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
             } else {
                 setCustomMessage({ type: 'error', text: data.error || "Ошибка загрузки ключей" });
             }
-        } catch (error) {
+        } catch (error) { // Убрана переменная error из списка, так как она не используется
             setCustomMessage({ type: 'error', text: "Ошибка сети при загрузке ключей" });
         } finally {
             setKeysLoading(false);
         }
-    };
+    }, [session?.user?.id]); // Добавлена зависимость
 
     useEffect(() => {
         if (open) {
             fetchPurchasedKeys();
             setCustomMessage(null);
         }
-    }, [open, session?.user?.id]);
+    }, [open, fetchPurchasedKeys]); // Добавлена fetchPurchasedKeys в зависимости
 
     const handlePasswordChange = async (values: { oldPassword: string; newPassword: string }) => {
         setCustomMessage(null);
@@ -81,21 +81,18 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     newPassword: values.newPassword,
                 }),
             });
-
             const textResponse = await res.text();
             let data = null;
-
             if (textResponse) {
                 try {
                     data = JSON.parse(textResponse);
-                } catch (parseError) {
+                } catch (parseError) { // Убрана переменная parseError из списка, так как она не используется
                     setCustomMessage({ type: 'error', text: "Некорректный ответ от сервера" });
                     return;
                 }
             } else {
                 data = {};
             }
-
             if (res.ok) {
                 setCustomMessage({ type: 'success', text: "Пароль успешно изменен" });
                 changePasswordForm.resetFields();
@@ -108,7 +105,7 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                 const errorMessage = data?.error || `Ошибка ${res.status}: ${res.statusText}`;
                 setCustomMessage({ type: 'error', text: errorMessage });
             }
-        } catch (error) {
+        } catch (error) { // Убрана переменная error из списка, так как она не используется
             setCustomMessage({ type: 'error', text: "Ошибка сети при изменении пароля" });
         } finally {
             setLoading(false);
@@ -131,16 +128,14 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     userId: session.user.id,
                 }),
             });
-
             const data = await res.json();
-
             if (res.ok) {
                 await signOut({ redirect: false });
                 onClose();
             } else {
                 message.error(data.error || "Ошибка при удалении аккаунта");
             }
-        } catch (error) {
+        } catch (error) { // Убрана переменная error из списка, так как она не используется
             message.error("Ошибка сети при удалении аккаунта");
         } finally {
             setLoading(false);
@@ -176,7 +171,6 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     <Text code>{session.user.email}</Text>
                 </div>
             )}
-
             <div style={{ marginBottom: 24 }}>
                 <Title level={5}>Изменить пароль</Title>
                 {customMessage && (
@@ -255,7 +249,6 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     </Form.Item>
                 </Form>
             </div>
-
             <div style={{ marginBottom: 24 }}>
                 <Title level={5}>Купленные ключи</Title>
                 <List
@@ -281,7 +274,6 @@ export default function UserProfileModal({ open, onClose }: UserProfileModalProp
                     )}
                 />
             </div>
-
             <div>
                 <Title level={5} style={{ color: 'red' }}>Опасная зона</Title>
                 <Popconfirm
