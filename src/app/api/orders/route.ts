@@ -11,7 +11,7 @@ interface TBankInitRequest {
   OrderId: string;
   Description?: string;
   Token: string;
-  DATA?: Record<string, any>;
+  DATA?: Record<string, unknown>;
 }
 
 interface TBankInitResponse {
@@ -32,8 +32,9 @@ interface TBankInitResponse {
  * @param v Значение параметра.
  * @returns Строковое представление значения.
  */
-function flattenValue(v: any): string {
+function flattenValue(v: unknown): string {
   if (v === null || v === undefined) return "";
+  
   // ВАЖНО: Для объектов DATA (и других вложенных объектов) используем JSON.stringify
   if (typeof v === "object" && !Array.isArray(v)) {
     // Согласно документации T-Bank, объекты в DATA должны быть сериализованы.
@@ -43,21 +44,21 @@ function flattenValue(v: any): string {
     // В вашем случае DATA: { connection_type: "Widget" }.
     // Ключи DATA не участвуют в сортировке, только его значение.
     // flattenValue(DATA) должен вернуть "Widget" если DATA={connection_type:"Widget"}.
-    // Но если мы передаем сам объект DATA, его значение для токена - это результат flattenValue.
+    // Но если мы передаем сам объект DATA, его значение для токена - это его сериализованное содержимое.
     // Лучше обрабатывать это на уровне generateToken.
     // Для простоты и соответствия документации, если это объект DATA, сериализуем его правильно.
-    // Однако, согласно алгоритму, в строку signString идут значения параметров.
-    // DATA - это параметр. Его значение - это объект. flattenValue должна обработать его.
-    // В примерах T-Bank DATA: {connection_type: "Widget"} -> в строку идет "Widget".
-    // Это означает, что flattenValue для объекта должна обрабатывать его ключи/значения.
-    // Но стандартный алгоритм - сортировка ключей объекта DATA и конкатенация их значений.
-    const keys = Object.keys(v).sort();
-    return keys.map(k => flattenValue(v[k])).join('');
+    // Для параметров объекта рекурсивно вызываем flattenValue
+    const obj = v as Record<string, unknown>;
+    const keys = Object.keys(obj).sort();
+    return keys.map(k => flattenValue(obj[k])).join('');
   }
+  
   if (Array.isArray(v)) {
     // Маловероятно для параметров Init, но на всякий случай
-    return v.map(flattenValue).join('');
+    const arr = v as unknown[];
+    return arr.map(flattenValue).join('');
   }
+  
   return String(v);
 }
 
@@ -67,7 +68,7 @@ function flattenValue(v: any): string {
  * @param secret Секретный пароль терминала.
  * @returns SHA256 хэш в нижнем регистре.
  */
-function generateToken(body: Record<string, any>, secret: string): string {
+function generateToken(body: Record<string, unknown>, secret: string): string {
   // 1. Подготавливаем список ключей, исключая Token и пустые значения
   const keysToSort = Object.keys(body)
     .filter(k => k !== 'Token' && body[k] !== undefined && body[k] !== null && body[k] !== '');
@@ -166,7 +167,7 @@ export async function POST(req: Request) {
     }
   };
 
-  const token = generateToken(baseRequestParams as Record<string, any>, terminalPassword);
+  const token = generateToken(baseRequestParams as Record<string, unknown>, terminalPassword);
   console.log("DEBUG: Generated Token:", token);
 
   // Теперь spread-оператор должен работать корректно
@@ -214,8 +215,10 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
-  } catch (error: any) {
+  } catch (error) {
+    // Типизируем ошибку
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     console.error("Ошибка сети или обработки ответа при вызове T-Bank Init:", error);
-    return NextResponse.json({ error: "Ошибка связи с T-Bank", details: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Ошибка связи с T-Bank", details: errorMessage }, { status: 500 });
   }
 }
