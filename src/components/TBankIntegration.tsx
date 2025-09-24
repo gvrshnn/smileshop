@@ -2,9 +2,18 @@
 "use client"; // <-- Важно!
 import { useEffect } from 'react';
 
+// Определение типов для параметров и возвращаемого значения
+interface RequestParams {
+  [key: string]: unknown;
+}
+
+interface RequestResponse {
+  [key: string]: unknown;
+}
+
 // Определение типов на основе инструкции Т-Банк
 interface PaymentIntegrationHelpers {
-  request(url: string, method: string, params: any): Promise<any>; // Можно уточнить типы params и возвращаемого значения
+  request(url: string, method: string, params: RequestParams): Promise<RequestResponse>;
 }
 
 interface PaymentIntegrationInstance {
@@ -24,6 +33,16 @@ interface IntegrationInitConfig {
     };
     // Другие features, если нужны
   };
+}
+
+interface PaymentInitResponse {
+  paymentURL: string;
+  [key: string]: unknown;
+}
+
+interface ApiErrorResponse {
+  error: string;
+  [key: string]: unknown;
 }
 
 declare global {
@@ -58,20 +77,23 @@ export default function TBankIntegration() {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ paymentType, orderId }), // Передаем orderId
                 });
+                
                 if (!res.ok) {
-                   const errorData = await res.json();
-                   console.error("API Error:", errorData);
-                   throw new Error(errorData.error || `Failed to init payment: ${res.status}`);
+                  const errorData: ApiErrorResponse = await res.json();
+                  console.error("API Error:", errorData);
+                  throw new Error(errorData.error || `Failed to init payment: ${res.status}`);
                 }
-                const data = await res.json();
+                
+                const data: PaymentInitResponse = await res.json();
                 console.log("Payment initialized, URL:", data.paymentURL);
                 return data.paymentURL; // Возвращаем PaymentURL
               },
             },
           },
         };
+        
         // Инициализируем PaymentIntegration
-        window.PaymentIntegration.init(initConfig).catch((err: unknown) => { // Исправлен тип any на unknown
+        window.PaymentIntegration.init(initConfig).catch((err: unknown) => {
           console.error("Error initializing PaymentIntegration:", err);
           // Можно добавить более конкретную обработку ошибок, если типизировать err
         });
@@ -83,7 +105,7 @@ export default function TBankIntegration() {
 
     // Проверим, загрузился ли скрипт до монтирования компонента (например, из кэша)
     if (typeof window !== 'undefined' && window.PaymentIntegration) {
-         window.onPaymentIntegrationLoad?.();
+      window.onPaymentIntegrationLoad?.();
     }
 
     // Очистка при размонтировании (опционально, если нужно удалить глобальную функцию)

@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
+    
     if (!token) {
       return new Response(`
         <html>
@@ -29,10 +30,12 @@ export async function GET(request: NextRequest) {
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
+
     // Ищем токен в базе данных
     const verificationToken = await prisma.emailVerificationToken.findUnique({
       where: { token },
     });
+
     if (!verificationToken) {
       return new Response(`
         <html>
@@ -57,12 +60,14 @@ export async function GET(request: NextRequest) {
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
+
     // Проверяем, не истек ли токен
     if (new Date() > verificationToken.expiresAt) {
       // Удаляем истекший токен
       await prisma.emailVerificationToken.delete({
         where: { id: verificationToken.id },
       });
+
       return new Response(`
         <html>
           <head>
@@ -86,15 +91,18 @@ export async function GET(request: NextRequest) {
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
+
     // Проверяем, не существует ли уже пользователь с таким email
     const existingUser = await prisma.user.findUnique({
       where: { email: verificationToken.email },
     });
+
     if (existingUser) {
       // Удаляем токен, так как пользователь уже существует
       await prisma.emailVerificationToken.delete({
         where: { id: verificationToken.id },
       });
+
       return new Response(`
         <html>
           <head>
@@ -118,6 +126,7 @@ export async function GET(request: NextRequest) {
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
+
     // Создаем пользователя
     const newUser = await prisma.user.create({
       data: {
@@ -126,10 +135,12 @@ export async function GET(request: NextRequest) {
         isAdmin: false,
       },
     });
+
     // Удаляем использованный токен
     await prisma.emailVerificationToken.delete({
       where: { id: verificationToken.id },
     });
+
     // Возвращаем страницу успеха
     return new Response(`
       <html>
@@ -157,6 +168,10 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Verification error:", error);
+    
+    // Типизируем ошибку
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    
     return new Response(`
       <html>
         <head>
