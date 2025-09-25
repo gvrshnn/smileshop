@@ -101,16 +101,16 @@ export default function Home() {
     setSignUpOpen(true);
   };
 
-if (loading) {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
-      {/* Убираем tip напрямую из Spin */}
-      <Spin size="large" /> 
-      {/* Или, если нужно отобразить текст рядом или внутри: */}
-      {/* <div><Spin size="large" /><div style={{ marginTop: 16 }}>Загрузка магазина...</div></div> */}
-    </div>
-  );
-}
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100vw' }}>
+        {/* Убираем tip напрямую из Spin */}
+        <Spin size="large" />
+        {/* Или, если нужно отобразить текст рядом или внутри: */}
+        {/* <div><Spin size="large" /><div style={{ marginTop: 16 }}>Загрузка магазина...</div></div> */}
+      </div>
+    );
+  }
 
   return (
     // Добавляем обертку с минимальной высотой 100vh
@@ -167,7 +167,7 @@ if (loading) {
           game={selectedGame}
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          // onBuy={handleBuy}
+        // onBuy={handleBuy}
         />
         <GameEditModal
           game={null}
