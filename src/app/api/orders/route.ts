@@ -62,17 +62,27 @@ function flattenValue(v: unknown): string {
 }
 
 function generateToken(body: Record<string, unknown>, secret: string): string {
-  const keysToSort = Object.keys(body)
-    .filter(k => k !== 'Token' && body[k] !== undefined && body[k] !== null && body[k] !== '');
+  // 1. Исключаем Token, DATA и Receipt из параметров подписи
+  const paramsForToken: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(body)) {
+    if (key !== 'Token' && key !== 'DATA' && key !== 'Receipt' && value !== undefined && value !== null && value !== '') {
+      paramsForToken[key] = value;
+    }
+  }
 
-  keysToSort.sort();
+  // 2. Добавляем Password как отдельный параметр
+  paramsForToken['Password'] = secret;
 
-  let signString = keysToSort.map(k => flattenValue(body[k])).join('');
-  signString += secret;
+  // 3. Сортируем по имени ключа
+  const sortedKeys = Object.keys(paramsForToken).sort();
+
+  // 4. Объединяем только значения в строку
+  let signString = sortedKeys.map(key => flattenValue(paramsForToken[key])).join('');
 
   console.log("DEBUG FIXED: signString (first 200 chars):", signString.substring(0, 200));
   console.log("DEBUG FIXED: signString (length):", signString.length);
 
+  // 5. Применяем SHA-256
   return crypto.createHash('sha256').update(signString, 'utf8').digest('hex');
 }
 // --- Конец функции генерации Token ---
