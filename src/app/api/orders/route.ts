@@ -77,7 +77,7 @@ function generateToken(body: Record<string, unknown>, secret: string): string {
   const sortedKeys = Object.keys(paramsForToken).sort();
 
   // 4. Объединяем только значения в строку
-  let signString = sortedKeys.map(key => flattenValue(paramsForToken[key])).join('');
+  const signString = sortedKeys.map(key => flattenValue(paramsForToken[key])).join('');
 
   console.log("DEBUG FIXED: signString (first 200 chars):", signString.substring(0, 200));
   console.log("DEBUG FIXED: signString (length):", signString.length);
