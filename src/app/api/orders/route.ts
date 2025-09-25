@@ -197,10 +197,16 @@ export async function POST(req: Request) {
   console.log("DEBUG: Terminal Password (first 5 chars for check):", terminalPassword.substring(0, 5) + '...');
   console.log("DEBUG: Full request body to T-Bank:", JSON.stringify(tBankRequestParams, null, 2));
 
+  // https://securepay.tinkoff.ru/v2/Init
+  // https://rest-api-test.tinkoff.ru/v2/Init
+
   try {
     const response = await fetch('https://rest-api-test.tinkoff.ru/v2/Init', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'User-Agent': 'YourApp/1.0'
+      },
       body: JSON.stringify(tBankRequestParams),
     });
 
