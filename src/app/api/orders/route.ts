@@ -201,7 +201,7 @@ export async function POST(req: Request) {
   // https://rest-api-test.tinkoff.ru/v2/Init
 
   try {
-    const response = await fetch('https://rest-api-test.tinkoff.ru/v2/Init', {
+    const response = await fetch('https://securepay.tinkoff.ru/v2/Init', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
