@@ -14,22 +14,22 @@ interface ReceiptItem {
   Ean13?: string;
 }
 
-// Делаем Phone необязательным в Receipt
 interface Receipt {
   Email: string;
-  Phone?: string; // Теперь необязательный
+  Phone?: string;
   Taxation: string;
   Items: ReceiptItem[];
 }
 
 interface TBankInitRequest {
   TerminalKey: string;
-  Amount: number; // В копейках
+  Amount: number;
   OrderId: string;
   Description?: string;
   Token: string;
   DATA?: Record<string, unknown>;
   Receipt?: Receipt;
+  NotificationURL?: string; // ДОБАВЛЕНО: URL для вебхука
 }
 
 interface TBankInitResponse {
@@ -43,7 +43,6 @@ interface TBankInitResponse {
   OrderId?: string;
 }
 
-// --- Функция для генерации Token ---
 function flattenValue(v: unknown): string {
   if (v === null || v === undefined) return "";
   
@@ -62,7 +61,6 @@ function flattenValue(v: unknown): string {
 }
 
 function generateToken(body: Record<string, unknown>, secret: string): string {
-  // 1. Исключаем Token, DATA и Receipt из параметров подписи
   const paramsForToken: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(body)) {
     if (key !== 'Token' && key !== 'DATA' && key !== 'Receipt' && value !== undefined && value !== null && value !== '') {
@@ -70,22 +68,15 @@ function generateToken(body: Record<string, unknown>, secret: string): string {
     }
   }
 
-  // 2. Добавляем Password как отдельный параметр
   paramsForToken['Password'] = secret;
-
-  // 3. Сортируем по имени ключа
   const sortedKeys = Object.keys(paramsForToken).sort();
-
-  // 4. Объединяем только значения в строку
   const signString = sortedKeys.map(key => flattenValue(paramsForToken[key])).join('');
 
   console.log("DEBUG FIXED: signString (first 200 chars):", signString.substring(0, 200));
   console.log("DEBUG FIXED: signString (length):", signString.length);
 
-  // 5. Применяем SHA-256
   return crypto.createHash('sha256').update(signString, 'utf8').digest('hex');
 }
-// --- Конец функции генерации Token ---
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -99,7 +90,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Отсутствуют userId или gameId" }, { status: 400 });
   }
   
-  // Делаем phone необязательным, проверяем только email
   if (!email) {
     return NextResponse.json({ error: "Отсутствует email" }, { status: 400 });
   }
@@ -137,7 +127,6 @@ export async function POST(req: Request) {
     data: { keys: keys.slice(1) },
   });
 
-  // --- Безопасное чтение и обрезка переменных окружения ---
   const terminalKey = (process.env.TINKOFF_TERMINAL_KEY || "").trim();
   const terminalPasswordRaw = process.env.TINKOFF_TERMINAL_PASSWORD || '';
   const terminalPassword = terminalPasswordRaw.trim().replace(/^"(.*)"$/, '$1');
@@ -154,25 +143,20 @@ export async function POST(req: Request) {
     );
   }
 
-  // --- Формирование полного payload согласно документации ---
   const amountInKopecks = Math.round(game.price * 100);
   
-  // Формируем данные для чека
   const receiptItems: ReceiptItem[] = [
     {
       Name: `Цифровой ключ: ${game.title}`,
       Price: amountInKopecks,
       Quantity: 1,
       Amount: amountInKopecks,
-      Tax: "vat20", // НДС 20% - уточните нужную ставку для вашего случая
-      // Ean13 можно не указывать для цифровых товаров
+      Tax: "vat20",
     }
   ];
 
-  // Создаем Receipt с опциональным phone
   const receipt: Receipt = {
     Email: email,
-    // Добавляем Phone только если он есть и не пустой
     ...(phone && { Phone: phone.replace(/[^\d+]/g, '') }),
     Taxation: "osn",
     Items: receiptItems
@@ -180,16 +164,22 @@ export async function POST(req: Request) {
 
   type BaseRequestParamsType = Omit<TBankInitRequest, 'Token'>;
 
-  // Формируем DATA с опциональным phone
+  // ВАЖНО: Получаем базовый URL для вебхука
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '') || 
+                  process.env.NEXTAUTH_URL || 
+                  (req.headers.get('host') ? `https://${req.headers.get('host')}` : 'http://localhost:3000');
+  
+  const notificationURL = `${baseUrl}/api/webhook-tbank`;
+
   const baseRequestParams: BaseRequestParamsType = {
     TerminalKey: terminalKey,
     Amount: amountInKopecks,
     OrderId: localOrderId,
     Description: `Покупка цифрового ключа для игры ${game.title}`,
+    NotificationURL: notificationURL, // ДОБАВЛЕНО: URL вебхука
     DATA: {
       connection_type: "Widget",
       Email: email,
-      // Добавляем Phone только если он есть
       ...(phone && { Phone: phone })
     },
     Receipt: receipt
@@ -197,18 +187,15 @@ export async function POST(req: Request) {
 
   const token = generateToken(baseRequestParams as Record<string, unknown>, terminalPassword);
   console.log("DEBUG: Generated Token:", token);
+  console.log("DEBUG: Webhook URL:", notificationURL);
 
   const tBankRequestParams: TBankInitRequest = {
     ...baseRequestParams,
     Token: token,
   };
 
-  // Логирование для отладки
   console.log("DEBUG: Terminal Password (first 5 chars for check):", terminalPassword.substring(0, 5) + '...');
   console.log("DEBUG: Full request body to T-Bank:", JSON.stringify(tBankRequestParams, null, 2));
-
-  // https://securepay.tinkoff.ru/v2/Init
-  // https://rest-api-test.tinkoff.ru/v2/Init
 
   try {
     const response = await fetch('https://securepay.tinkoff.ru/v2/Init', {
